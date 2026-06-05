@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tumor Purity Calculator</title>
+  <style>
+    /* ── Reset & base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f4f6f9;
+      color: #2d3748;
+      min-height: 100vh;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1a5276 0%, #2c7bb6 100%);
+      color: #fff;
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    header p.subtitle {
+      font-size: 1.05rem;
+      opacity: 0.88;
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ── Main container ───────────────────────────────────────────── */
+    main {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem 3rem;
+    }
+
+    /* ── Info cards ───────────────────────────────────────────────── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      border-left: 4px solid #2c7bb6;
+    }
+
+    .card h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #718096;
+      margin-bottom: 0.35rem;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+      color: #2d3748;
+      line-height: 1.5;
+    }
+
+    /* ── App section ──────────────────────────────────────────────── */
+    .app-wrapper {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+      overflow: hidden;
+    }
+
+    .app-wrapper iframe {
+      display: block;
+      width: 100%;
+      height: 720px;
+      border: none;
+    }
+
+    /* ── Method section ───────────────────────────────────────────── */
+    .method {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.5rem 1.8rem;
+      margin-top: 1.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .method h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: #1a5276;
+    }
+
+    .method p {
+      font-size: 0.92rem;
+      color: #4a5568;
+      line-height: 1.7;
+      margin-bottom: 0.6rem;
+    }
+
+    .method code {
+      background: #edf2f7;
+      padding: 0.15em 0.45em;
+      border-radius: 4px;
+      font-size: 0.88em;
+      color: #c05621;
+    }
+
+    /* ── Karyotype table ──────────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      margin-top: 0.75rem;
+    }
+
+    th {
+      background: #ebf5fb;
+      color: #1a5276;
+      font-weight: 600;
+      padding: 0.5rem 0.8rem;
+      text-align: left;
+      border-bottom: 2px solid #d6eaf8;
+    }
+
+    td {
+      padding: 0.45rem 0.8rem;
+      border-bottom: 1px solid #edf2f7;
+      color: #4a5568;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f7fbff; }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.83rem;
+      color: #a0aec0;
+    }
+
+    footer a { color: #2c7bb6; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Tumor Purity Calculator</h1>
+    <p class="subtitle">
+      Estimate tumor cell fraction from clonal copy-number variant (CNV) events
+      using observed minor allele fraction (MAF).
+    </p>
+  </header>
+
+  <main>
+
+    <!-- Info cards -->
+    <div class="cards">
+      <div class="card">
+        <h3>Assumption</h3>
+        <p>CNV event is <strong>clonal</strong> — present in 100% of tumor cells.</p>
+      </div>
+      <div class="card">
+        <h3>Inputs</h3>
+        <p>Tumor karyotype (A, AA, AAB, …) and observed minor allele fraction.</p>
+      </div>
+      <div class="card">
+        <h3>Output</h3>
+        <p>Estimated tumor purity as a percentage, plus a MAF-vs-purity curve.</p>
+      </div>
+      <div class="card">
+        <h3>Normal background</h3>
+        <p>Non-tumor cells are assumed diploid AB (MAF = 0.5).</p>
+      </div>
+    </div>
+
+    <!-- Embedded Shiny app -->
+    <div class="app-wrapper">
+      <iframe
+        src="https://zac-shi.shinyapps.io/TumorPurityCalculator/"
+        title="Tumor Purity Calculator"
+        allowfullscreen>
+      </iframe>
+    </div>
+
+    <!-- Method box -->
+    <div class="method">
+      <h2>Method</h2>
+      <p>
+        For a sample with tumor purity <code>p</code>, tumor karyotype with
+        <code>a</code> minor-allele copies out of <code>t</code> total copies,
+        and a diploid (AB) normal background, the observed MAF is:
+      </p>
+      <p style="font-family:monospace; background:#edf2f7; padding:0.6rem 1rem; border-radius:6px;">
+        MAF = (p·a + (1−p)·1) / (p·t + (1−p)·2)
+      </p>
+      <p>Solving for <code>p</code>:</p>
+      <p style="font-family:monospace; background:#edf2f7; padding:0.6rem 1rem; border-radius:6px;">
+        p = (1 − 2·MAF) / (MAF·(t − 2) + (1 − a))
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Karyotype</th>
+            <th>Minor copies (a)</th>
+            <th>Total copies (t)</th>
+            <th>Tumor MAF</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>A</td>    <td>0</td><td>1</td><td>0.000</td><td>Hemizygous deletion</td></tr>
+          <tr><td>AA</td>   <td>0</td><td>2</td><td>0.000</td><td>Copy-neutral LOH</td></tr>
+          <tr><td>AB</td>   <td>1</td><td>2</td><td>0.500</td><td>Diploid — indeterminate</td></tr>
+          <tr><td>AAB</td>  <td>1</td><td>3</td><td>0.333</td><td>Gain with LOH</td></tr>
+          <tr><td>AAA</td>  <td>0</td><td>3</td><td>0.000</td><td>Triploid, all major</td></tr>
+          <tr><td>AABB</td> <td>2</td><td>4</td><td>0.500</td><td>Tetraploid balanced — indeterminate</td></tr>
+          <tr><td>AAAB</td> <td>1</td><td>4</td><td>0.250</td><td>Tetraploid, 1 minor</td></tr>
+          <tr><td>AAAA</td> <td>0</td><td>4</td><td>0.000</td><td>Tetraploid, all major</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>
+      Source code on
+      <a href="https://github.com/zacshi/TumorPurityCalculator" target="_blank">GitHub</a>
+      &nbsp;·&nbsp;
+      App hosted on
+      <a href="https://zac-shi.shinyapps.io/TumorPurityCalculator/" target="_blank">shinyapps.io</a>
+    </p>
+  </footer>
+
+</body>
+</html>
