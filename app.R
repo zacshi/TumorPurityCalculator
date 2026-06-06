@@ -8,7 +8,7 @@ karyotypes <- list(
   "A"    = list(a = 0, t = 1, desc = "Hemizygous deletion"),
   "AA"   = list(a = 0, t = 2, desc = "Copy-neutral LOH"),
   "AB"   = list(a = 1, t = 2, desc = "Diploid (same as normal) — indeterminate"),
-  "AAB"  = list(a = 1, t = 3, desc = "Gain with LOH"),
+  "AAB"  = list(a = 1, t = 3, desc = "Copy Gain"),
   "AAA"  = list(a = 0, t = 3, desc = "Triploid, all major allele"),
   "AABB" = list(a = 2, t = 4, desc = "Tetraploid balanced (same as normal) — indeterminate"),
   "AAAB" = list(a = 1, t = 4, desc = "Tetraploid, 1 minor allele"),
