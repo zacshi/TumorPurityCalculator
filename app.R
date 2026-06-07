@@ -45,7 +45,7 @@ ui <- page_sidebar(
     h5("Inputs", class = "text-primary fw-semibold"),
 
     selectInput(
-      "karyotype", "Tumor karyotype",
+      "karyotype", "Tumor event karyotype",
       choices  = names(karyotypes),
       selected = "AA"
     ),
