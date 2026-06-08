@@ -1,4 +1,4 @@
 
-##Tumor Purity Calculator
+Tumor Purity Calculator
 
-*<https://zacshi.github.io/TumorPurityCalculator/>
+<https://zacshi.github.io/TumorPurityCalculator/>
